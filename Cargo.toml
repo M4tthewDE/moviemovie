@@ -7,8 +7,10 @@ edition = "2021"
 anyhow = "1.0.98"
 chrono = "0.4.41"
 flate2 = "1.1.1"
-reqwest = "0.12.15"
+refinery = { version = "0.8.16", features = ["tokio-postgres"] }
+reqwest = { version = "0.12.15", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0.140"
 tokio = { version = "1.45.0", features = ["rt", "rt-multi-thread", "macros"] }
+tokio-postgres = "0.7.13"
 toml = "0.8.22"

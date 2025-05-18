@@ -17,6 +17,16 @@ pub struct MovieIdEntry {
     pub adult: bool,
 }
 
+#[derive(Deserialize, Debug)]
+pub struct Cast {
+    pub cast: Vec<CastMember>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct CastMember {
+    pub name: String,
+}
+
 pub struct TmdbClient {
     client: Client,
 }
@@ -57,5 +67,12 @@ impl TmdbClient {
         }
 
         Ok(movie_ids)
+    }
+
+    pub async fn cast(&self, movie_id: u64) -> Result<Cast> {
+        let url = format!("https://api.themoviedb.org/3/movie/{movie_id}/credits");
+        let response = self.client.get(url).send().await?.error_for_status()?;
+        let cast: Cast = response.json().await?;
+        Ok(cast)
     }
 }
