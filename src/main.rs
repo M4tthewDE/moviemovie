@@ -1,9 +1,9 @@
 use std::path::PathBuf;
 
 use anyhow::Result;
-use db::DbClient;
+use db::DatabaseWriter;
 use serde::Deserialize;
-use tmdb::TmdbClient;
+use tmdb::{Cast, MovieDetails, TmdbClient};
 
 mod db;
 mod tmdb;
@@ -25,20 +25,46 @@ impl Config {
     }
 }
 
+struct Packet {
+    movie_details: MovieDetails,
+    cast: Cast,
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     let config = Config::new()?;
 
-    let mut db = DbClient::new(&config).await?;
-    db.run_migrations().await?;
+    let (tx, rx) = tokio::sync::mpsc::channel(50);
+
+    let mut db_writer = DatabaseWriter::new(&config, rx).await?;
+    db_writer.run_migrations().await?;
+
+    let _writer_handle = tokio::spawn(async move {
+        db_writer.run().await.unwrap();
+    });
 
     let tmdb = TmdbClient::new(&config.token)?;
+
+    println!("loading movie ids");
     let movie_ids = tmdb.load_movie_ids().await?;
+
     println!("fetched {} movie ids", movie_ids.len());
 
-    let cast = tmdb.cast(movie_ids.get(0).unwrap().id).await?;
-    for member in cast.cast {
-        println!("{member:?}");
+    for (i, movie_id) in movie_ids.iter().enumerate() {
+        let movie_details = tmdb.movie(movie_id.id).await?;
+        let cast = tmdb.cast(movie_id.id).await?;
+
+        let packet = Packet {
+            movie_details,
+            cast,
+        };
+
+        tx.send(packet).await?;
+
+        println!(
+            "sender progress: {:.4}%",
+            (i as f64) / (movie_ids.len() as f64) * 100.0
+        )
     }
 
     Ok(())

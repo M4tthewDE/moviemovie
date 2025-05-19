@@ -13,8 +13,6 @@ use serde::Deserialize;
 pub struct MovieIdEntry {
     pub id: u64,
     pub original_title: String,
-    pub popularity: f64,
-    pub adult: bool,
 }
 
 #[derive(Deserialize, Debug)]
@@ -25,6 +23,15 @@ pub struct Cast {
 #[derive(Deserialize, Debug)]
 pub struct CastMember {
     pub name: String,
+    pub character: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct MovieDetails {
+    pub id: i32,
+    pub original_title: String,
+    pub release_date: String,
+    pub runtime: i32,
 }
 
 pub struct TmdbClient {
@@ -74,5 +81,12 @@ impl TmdbClient {
         let response = self.client.get(url).send().await?.error_for_status()?;
         let cast: Cast = response.json().await?;
         Ok(cast)
+    }
+
+    pub async fn movie(&self, movie_id: u64) -> Result<MovieDetails> {
+        let url = format!("https://api.themoviedb.org/3/movie/{movie_id}");
+        let response = self.client.get(url).send().await?.error_for_status()?;
+        let movie_details: MovieDetails = response.json().await?;
+        Ok(movie_details)
     }
 }

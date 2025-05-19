@@ -2,17 +2,15 @@ CREATE TABLE movies (
     movie_id SERIAL PRIMARY KEY,
     tmdb_id INT,
     title VARCHAR(255) NOT NULL,
-    release_year INT,
+    release_date VARCHAR(255) NOT NULL,
     runtime_minutes INT,
-    director VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE persons (
     person_id SERIAL PRIMARY KEY,
     tmdb_id INT,
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
+    name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
