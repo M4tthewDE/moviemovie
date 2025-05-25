@@ -56,7 +56,8 @@ impl DatabaseWriter {
                     DO UPDATE SET
                     title = EXCLUDED.title,
                     release_date = EXCLUDED.release_date,
-                    runtime_minutes = EXCLUDED.runtime_minutes",
+                    runtime_minutes = EXCLUDED.runtime_minutes,
+                    created_at = EXCLUDED.created_at",
                 &[
                     &movie_details.id,
                     &movie_details.original_title,
