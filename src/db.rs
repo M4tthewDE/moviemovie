@@ -51,7 +51,12 @@ impl DatabaseWriter {
     async fn insert_movie_details(&mut self, movie_details: MovieDetails) -> Result<()> {
         self.client
             .query(
-                "INSERT INTO movies (tmdb_id, title, release_date, runtime_minutes) VALUES ($1, $2, $3, $4)",
+                "INSERT INTO movies (tmdb_id, title, release_date, runtime_minutes) VALUES ($1, $2, $3, $4)
+                    ON CONFLICT (tmdb_id)
+                    DO UPDATE SET
+                    title = EXCLUDED.title,
+                    release_date = EXCLUDED.release_date,
+                    runtime_minutes = EXCLUDED.runtime_minutes",
                 &[
                     &movie_details.id,
                     &movie_details.original_title,

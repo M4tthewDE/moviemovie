@@ -1,6 +1,6 @@
 CREATE TABLE movies (
     movie_id SERIAL PRIMARY KEY,
-    tmdb_id INT,
+    tmdb_id INT UNIQUE,
     title VARCHAR(255) NOT NULL,
     release_date VARCHAR(255) NOT NULL,
     runtime_minutes INT,
@@ -9,7 +9,7 @@ CREATE TABLE movies (
 
 CREATE TABLE persons (
     person_id SERIAL PRIMARY KEY,
-    tmdb_id INT,
+    tmdb_id INT UNIQUE,
     name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
