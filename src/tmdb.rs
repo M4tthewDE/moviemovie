@@ -12,7 +12,6 @@ use serde::Deserialize;
 #[derive(Deserialize, Debug)]
 pub struct MovieIdEntry {
     pub id: u64,
-    pub original_title: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -22,6 +21,7 @@ pub struct Cast {
 
 #[derive(Deserialize, Debug)]
 pub struct CastMember {
+    pub id: i32,
     pub name: String,
     pub character: String,
 }
